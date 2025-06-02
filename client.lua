@@ -132,27 +132,38 @@ function handleJavaScriptRequest(data)
 
     local action = data.action
 
-    if action == "closeTablet" then
-        closeTablet()
+    local actions = {
+        closeTablet = function()
+            closeTablet()
+        end,
 
-    elseif action == "searchPlayer" then
-        if data.playerID then
-            searchPlayer(tonumber(data.playerID))
+        searchPlayer = function()
+            if data.playerID then
+                searchPlayer(tonumber(data.playerID))
+            end
+        end,
+
+        arrestPlayer = function()
+            if data.playerID and data.time and data.articles and data.description then
+                triggerServerEvent("tablet:arrestPlayer", localPlayer, localPlayer, data.playerID, data.time, data.articles, data.description)
+            end
+        end,
+
+        getNearbyPlayers = function()
+            triggerServerEvent("tablet:requestNearbyPlayers", localPlayer, localPlayer)
+        end,
+
+        playerForArrest = function()
+            triggerServerEvent("tablet:loadPlayerForArrest", localPlayer, localPlayer, data.playerID)
+        end,
+
+        requestLeaderStatus = function()
+            triggerServerEvent("tablet:requestLeaderStatus", localPlayer)
         end
+    }
 
-    elseif action == "arrestPlayer" then
-        if data.playerID and data.time and data.articles and data.description then
-            triggerServerEvent("tablet:arrestPlayer", localPlayer, localPlayer, data.playerID, data.time, data.articles, data.description)
-        end
-
-    elseif action == "getNearbyPlayers" then
-        triggerServerEvent("tablet:requestNearbyPlayers", localPlayer, localPlayer)
-
-    elseif action == "playerForArrest" then
-        triggerServerEvent("tablet:loadPlayerForArrest", localPlayer, localPlayer, data.playerID)
-
-    elseif action == "requestLeaderStatus" then
-        triggerServerEvent("tablet:requestLeaderStatus", localPlayer)
+    if actions[action] then
+        actions[action]()
     end
 end
 
@@ -240,6 +251,22 @@ function searchPlayer(playerID)
     triggerServerEvent("tablet:loadPlayerForArrest", localPlayer, localPlayer, playerID)
 end
 
+local function escapeString(str)
+    return '"' .. str:gsub('"', '\\"') .. '"'
+end
+
+local function valueToJSONString(value)
+    local typeHandlers = {
+        string = escapeString,
+        number = tostring,
+        boolean = tostring,
+        table = function(v) return tableToJSONString(v) end
+    }
+
+    local handler = typeHandlers[type(value)]
+    return handler and handler(value) or 'null'
+end
+
 function tableToJSONString(tbl)
     local json = "{"
     local first = true
@@ -250,17 +277,8 @@ function tableToJSONString(tbl)
         end
         first = false
 
-        json = json .. '"' .. tostring(key) .. '":'
-
-        if type(value) == "string" then
-            json = json .. '"' .. value:gsub('"', '\\"') .. '"'
-        elseif type(value) == "number" or type(value) == "boolean" then
-            json = json .. tostring(value)
-        elseif type(value) == "table" then
-            json = json .. tableToJSONString(value)
-        else
-            json = json .. 'null'
-        end
+        json = json .. escapeString(tostring(key)) .. ":"
+        json = json .. valueToJSONString(value)
     end
 
     json = json .. "}"
