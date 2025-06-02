@@ -13,7 +13,7 @@
 - 💸 **Visualização de multas** aplicadas
 - 📜 **Histórico criminal e registro geral**
 - 🧑‍🤝‍🧑 **Listagem de jogadores próximos**
-- 🔒 **Sistema de prisão** com formulário detalhado
+- 🔒 **Sistema de prisão**
 
 ## 💡 Sobre o Projeto
 
