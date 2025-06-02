@@ -1,0 +1,25 @@
+<meta>
+    <info author="DEV GG" name="Tablet Corporativo" version="1.0" description="Sistema de tablet corporativo para MTA" />
+    
+    <script src="client.lua" type="client" cache="false" />
+    <script src="server.lua" type="server" cache="false" />
+    
+    <file src="tablet/index.html" />
+    <file src="tablet/style.css" />
+    <file src="tablet/script.js" />
+    
+    <oop>true</oop>
+    
+    <aclrequest>
+        <right name="function.dbQuery" access="true" />
+        <right name="function.dbExec" access="true" />
+        <right name="function.dbPoll" access="true" />
+        <right name="function.createBrowser" access="true" />
+        <right name="function.loadBrowserURL" access="true" />
+        <right name="function.executeBrowserJavascript" access="true" />
+    </aclrequest>
+
+    <setting name="browser/dom_access" value="true" />
+    <setting name="browser/plugins_enabled" value="true" />
+    <setting name="browser/javascript_enabled" value="true" />
+</meta>
